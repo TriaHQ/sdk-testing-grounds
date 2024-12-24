@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Lit + TS</title>
+
+    <!-- ############################################################## -->
+    <!-- ############################################################## -->
+    <script>
+      window.addEventListener("message", (event) => {
+        if (
+          event.origin !== "https://connect.tria.so" &&
+          event.origin !== "http://localhost:3001" &&
+          event.origin !== "https://staging-auth-lit.tria.so"
+        )
+          return;
+        try {
+          const { eventType, data } = event.data;
+
+          if (eventType === "otp-verification") {
+            console.log("Received OTP verification message:", data);
+
+            if (data.success) {
+              console.log("OTP verification successful", data.message); // Or any other logic to handle success
+            } else {
+              console.error("OTP verification failed:", data.message);
+            }
+          }
+        } catch (error) {
+          console.error("Error processing message:", error);
+        }
+      });
+    </script>
+
+    <!-- ############################################################ -->
+    <!-- ############################################################ -->
+    <script type="module">
+      console.log("test");
+      import { AuthManager } from "https://unpkg.com/@tria-sdk/authenticate-web@1.0.3/dist/index.es.js";
+      // import { AuthManager } from "/index.es.js";
+
+      const authManager = new AuthManager({
+        analyticsKeys: {
+          clientId: "b48d8230-57f9-43fb-a952-722668bb3521",
+          projectId: "f5c9aa2c-a94e-42c5-a85b-b943f07b8bc9",
+        },
+      });
+
+      authManager.configure({
+        chain: "SEPOLIA",
+        environment: "testnet",
+        triaStaging: false,
+        aa: {
+          pimlicoApiKey: "af86d1ab-0dc4-4be7-96eb-ce9fc9fd48c0",
+          isSponsored: true,
+          sponsorshipPolicyIds: {
+            FUSE: "sp_cheerful_thing",
+            POLYGON: "sp_slim_namor",
+          },
+          accountType: "Etherspot",
+        },
+      });
+
+      authManager.configureAuthUI({
+        darkMode: false,
+        allowExternalWallets: true,
+        showDivider: true,
+        showLogo: true,
+        showPoweredByTria: true,
+        otpBgColor: "#ffffff",
+        otpTextColor: "#000000",
+        otpBoxBgColor: "#e5e5e5",
+        darkIcons: true,
+      });
+
+      authManager.configureTransactionsUI({ darkMode: false });
+
+      authManager.configureWalletUI({
+        darkMode: false,
+        primaryColor: "#7D40FF",
+      });
+
+      // white mode
+      authManager.setAuthUIStyling({
+        "modal-height": "auto",
+        "primary-color": "#7d40ff",
+
+        "bg-color-primary": "#ffffff",
+        "bg-color-tertiary": "#f5f5f5",
+
+        "text-color-primary": "#000000",
+        "text-color-secondary": "#000000",
+        "text-color-tertiary": "#ffffff",
+
+        "button-bg-email": "#f5f5f5",
+        "button-bg-email-hover": "#e5e5e5",
+        "button-bg-twitter": "#f5f5f5",
+        "button-bg-twitter-hover": "#e5e5e5",
+        "button-bg-google": "#f5f5f5",
+        "button-bg-google-hover": "#e5e5e5",
+        "button-bg-apple": "#f5f5f5",
+        "button-bg-apple-hover": "#e5e5e5",
+        "button-bg-tertiary": "#f5f5f5",
+
+        "input-bg-primary": "#f5f5f5",
+        "input-border-color": "#d1d5db",
+        "input-text-color": "#000000",
+
+        "phone-input-bg": "#f5f5f5",
+        "phone-input-code-bg": "#d1d5db",
+
+        "country-dropdown-bg": "#d1d5db",
+        "country-dropdown-bg-hover": "#f5f5f5",
+
+        "toggle-bg": "#f5f5f5",
+        "button-submit-bg": "#4d4d4d",
+        "pill-bg": "#f5f5f5",
+
+        "border-color-primary": "rgba(0, 0, 0, 0.1)",
+
+        "divider-color": "rgba(0, 0, 0, 0.1)",
+      });
+
+      // Login function
+      function login() {
+        authManager.login().then((result) => {
+          console.log("Login:", result);
+        });
+      }
+      function googleLogin() {
+        authManager.googleSignIn().then((result) => {
+          console.log("Google login:", result);
+        });
+      }
+
+      //Check trianame
+      function checkName() {
+        const name = document.getElementById("trianame-input").value;
+        authManager
+          .checkIfNameAvailable(name)
+          .then((result) => console.log("Trianame is avalaible:", result));
+      }
+
+      // Get Name suggestions
+      function suggestName() {
+        const name = document.getElementById("trianame-input").value;
+        authManager
+          .suggestTriaNames(name)
+          .then((result) => console.log("Suggested Trianames:", result));
+      }
+      // Create Account
+      function createAccount() {
+        const name = document.getElementById("trianame-input").value;
+        authManager
+          .createAccount(name)
+          .then((result) => console.log("Account Created:", result));
+      }
+      // Initiate Otp
+      function intiateEmailOtp() {
+        const value = document.getElementById("email-otp-input").value;
+        console.log(value);
+        authManager
+          .initiateOtp({ email: value, phoneNumber: undefined })
+          .then((result) =>
+            console.log("Otp initiated", result?.success, result?.message)
+          );
+      }
+      function intiatePhoneOtp() {
+        const value = document.getElementById("phone-otp-input").value;
+        authManager
+          .initiateOtp({ email: undefined, phoneNumber: value })
+          .then((result) =>
+            console.log("Otp initiated", result?.success, result?.message)
+          );
+      }
+      function intiateAuthManager() {
+        console.log("auth manager", authManager);
+      }
+      // Disconnect function
+      function disconnect() {
+        authManager.disconnect();
+      }
+
+      // Sign message function
+      function signMessage() {
+        const message = document.getElementById("sign-input").value;
+        authManager.signMessage(message).then((result) => {
+          console.log("Signed message:", result);
+        });
+      }
+
+      // Get account function
+      function getAccount() {
+        const account = authManager.getAccount();
+        console.log("Account:", account);
+      }
+
+      // Send transaction function
+      function sendTransaction() {
+        const amount = 0.000001;
+        const recipientAddress = "0x59f7843B267E79ea51B687a04Ef497bA240E7B26";
+        authManager.send(amount, recipientAddress).then((result) => {
+          console.log("Transaction sent:", result);
+        });
+      }
+
+      // Write contract function
+      function writeContract() {
+        const contractDetails = {
+          contractAddress: "0xFfC6F3186985e963821D3E30Cdb2ec4c0bE110e5",
+          abi: [
+            {
+              inputs: [
+                { internalType: "uint256", name: "_tokenId", type: "uint256" },
+                { internalType: "uint256", name: "_amount", type: "uint256" },
+                { internalType: "address", name: "_claimer", type: "address" },
+              ],
+              name: "airdropCoupon",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ],
+          functionName: "airdropCoupon",
+          args: [
+            1,
+            1,
+            JSON.parse(localStorage.getItem("tria.wallet.store"))?.aa?.address,
+          ],
+        };
+        authManager.writeContract(contractDetails).then((result) => {
+          console.log("Contract written:", result);
+        });
+      }
+
+      function readContract() {
+        const contractDetails = {
+          contractAddress: "0xFfC6F3186985e963821D3E30Cdb2ec4c0bE110e5",
+          abi: [
+            {
+              inputs: [
+                { internalType: "uint256", name: "tokenId", type: "uint256" },
+              ],
+              name: "uri",
+              outputs: [{ internalType: "string", name: "", type: "string" }],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+          functionName: "uri",
+          args: ["1"],
+        };
+        authManager.readContract(contractDetails).then((result) => {
+          console.log("Contract read:", result);
+        });
+      }
+
+      // Add event listeners
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("login-button")
+          .addEventListener("click", login);
+        document
+          .getElementById("disconnect-button")
+          .addEventListener("click", disconnect);
+        document
+          .getElementById("sign-button")
+          .addEventListener("click", signMessage);
+        document
+          .getElementById("acc-button")
+          .addEventListener("click", getAccount);
+        document
+          .getElementById("send-button")
+          .addEventListener("click", sendTransaction);
+        document
+          .getElementById("write-button")
+          .addEventListener("click", writeContract);
+        document
+          .getElementById("read-button")
+          .addEventListener("click", readContract);
+        // ######### LEGO ############
+        document
+          .getElementById("custom-google-login")
+          .addEventListener("click", googleLogin);
+        // Listen for login and logout events
+        // check Trianame
+        document
+          .getElementById("check-trianame")
+          .addEventListener("click", checkName);
+        authManager.addEventListener("TRIA_LOGIN", (event) => {
+          console.log("TRIA_LOGIN event received:", event.detail);
+        });
+        //suggest Trianame
+        document
+          .getElementById("suggest-trianame")
+          .addEventListener("click", suggestName);
+        // create account
+        document
+          .getElementById("create-account")
+          .addEventListener("click", createAccount);
+        // initiate email otp
+        document
+          .getElementById("initiate-email-otp")
+          .addEventListener("click", intiateEmailOtp);
+        // initiate email otp
+        document
+          .getElementById("initiate-phone-otp")
+          .addEventListener("click", intiatePhoneOtp);
+        document
+          .getElementById("initiate-authManager")
+          .addEventListener("click", intiateAuthManager);
+
+        authManager.addEventListener("TRIA_LOGOUT", (event) => {
+          console.log("TRIA_LOGOUT event received:", event.detail);
+        });
+      });
+    </script>
+    <style>
+      body {
+        background: #f5f5f5;
+        font-family: "Arial", sans-serif;
+        height: 100vh;
+        display: flex;
+      }
+      .container {
+        margin-top: auto;
+        margin-bottom: auto;
+        max-width: 500px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      input[type="text"] {
+        width: calc(100% - 24px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin: 10px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: #2196f3;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin: 10px;
+      }
+      button:hover {
+        background: #1976d2;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button id="login-button">Login</button>
+      <!-- ADDED BY LEGO -->
+      <button id="custom-google-login">Google</button>
+      <!--  -->
+      <button id="disconnect-button">Disconnect</button>
+      <input id="sign-input" type="text" placeholder="Message to sign" />
+      <button id="sign-button">Sign message</button>
+      <button id="acc-button">Get account</button>
+      <button id="send-button">Send transaction</button>
+      <button id="write-button">Write contract</button>
+      <button id="read-button">Read contract</button>
+      <input
+        id="trianame-input"
+        type="text"
+        placeholder="Enter your trianame"
+      />
+      <button id="check-trianame">Check Trianame</button>
+      <button id="suggest-trianame">Suggest Trianame</button>
+      <button id="create-account">Create Account</button>
+      <input id="email-otp-input" type="text" placeholder="Enter your email" />
+      <button id="initiate-email-otp">Email otp</button>
+      <input
+        id="phone-otp-input"
+        type="text"
+        placeholder="Enter your phone number"
+      />
+      <button id="initiate-phone-otp">Phone otp</button>
+      <button id="initiate-authManager">AuthManager</button>
+    </div>
+  </body>
+</html>
