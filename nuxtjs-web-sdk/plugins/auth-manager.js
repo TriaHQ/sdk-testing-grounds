@@ -1,4 +1,4 @@
-import { AuthManager } from "@tria-sdk/authenticate-web";
+import { AuthManager } from "@tria-sdk/authenticate-web-neo";
 
 export default ({ app }, inject) => {
   // Initialize the AuthManager
@@ -8,11 +8,12 @@ export default ({ app }, inject) => {
       clientId: "b48d8230-57f9-43fb-a952-722668bb3521",
       projectId: "f5c9aa2c-a94e-42c5-a85b-b943f07b8bc9",
     },
-  });
-  authManager.configure({
     chain: "SEPOLIA",
-    // triaStaging: false,
   });
+  // authManager.configure({
+  //   chain: "SEPOLIA",
+  //   // triaStaging: false,
+  // });
 
   // configure web 3 settings
   // authManager.configure({
