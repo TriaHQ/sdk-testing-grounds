@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import "~/node_modules/@tria-sdk/authenticate-web-neo/dist/style.css";
+
 export default {
   data() {
     return {
@@ -81,19 +83,19 @@ export default {
       console.log("Login/Signup response:", response);
     },
     loginListen() {
-      this.$authManager.addEventListener("TRIA_LOGIN", () => {
+      this.$authManager.subscribe("LOGIN_SUCCESS", () => {
         console.log("setting login state");
         this.isLoggedIn = true;
       });
     },
     signupListen() {
-      this.$authManager.addEventListener("TRIA_SIGNUP", () => {
-        console.log("setting signup state");
-        this.isLoggedIn = true;
-      });
+      // this.$authManager.addEventListener("TRIA_SIGNUP", () => {
+      //   console.log("setting signup state");
+      //   this.isLoggedIn = true;
+      // });
     },
     logoutListen() {
-      this.$authManager.addEventListener("TRIA_LOGOUT", () => {
+      this.$authManager.subscribe("LOGOUT_SUCCESS", () => {
         this.isLoggedIn = false;
       });
     },

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@tria-sdk/authenticate-web-neo@5.2.1/dist/style.css" />
     <title>Vite + Lit + TS</title>
 
     <!-- ############################################################## -->
@@ -38,7 +39,7 @@
     <!-- ############################################################ -->
     <script type="module">
       console.log("test");
-      import { AuthManager } from "https://unpkg.com/@tria-sdk/authenticate-web@1.0.3/dist/index.es.js";
+      import { AuthManager } from "https://unpkg.com/@tria-sdk/authenticate-web-neo@5.2.1/dist/index.es.js";
       // import { AuthManager } from "/index.es.js";
 
       const authManager = new AuthManager({
@@ -46,9 +47,6 @@
           clientId: "b48d8230-57f9-43fb-a952-722668bb3521",
           projectId: "f5c9aa2c-a94e-42c5-a85b-b943f07b8bc9",
         },
-      });
-
-      authManager.configure({
         chain: "SEPOLIA",
         environment: "testnet",
         triaStaging: false,
@@ -60,8 +58,9 @@
             POLYGON: "sp_slim_namor",
           },
           accountType: "Etherspot",
-        },
+        }
       });
+
 
       authManager.configureAuthUI({
         darkMode: false,
@@ -83,45 +82,45 @@
       });
 
       // white mode
-      authManager.setAuthUIStyling({
-        "modal-height": "auto",
-        "primary-color": "#7d40ff",
+      // authManager.setAuthUIStyling({
+      //   "modal-height": "auto",
+      //   "primary-color": "#7d40ff",
 
-        "bg-color-primary": "#ffffff",
-        "bg-color-tertiary": "#f5f5f5",
+      //   "bg-color-primary": "#ffffff",
+      //   "bg-color-tertiary": "#f5f5f5",
 
-        "text-color-primary": "#000000",
-        "text-color-secondary": "#000000",
-        "text-color-tertiary": "#ffffff",
+      //   "text-color-primary": "#000000",
+      //   "text-color-secondary": "#000000",
+      //   "text-color-tertiary": "#ffffff",
 
-        "button-bg-email": "#f5f5f5",
-        "button-bg-email-hover": "#e5e5e5",
-        "button-bg-twitter": "#f5f5f5",
-        "button-bg-twitter-hover": "#e5e5e5",
-        "button-bg-google": "#f5f5f5",
-        "button-bg-google-hover": "#e5e5e5",
-        "button-bg-apple": "#f5f5f5",
-        "button-bg-apple-hover": "#e5e5e5",
-        "button-bg-tertiary": "#f5f5f5",
+      //   "button-bg-email": "#f5f5f5",
+      //   "button-bg-email-hover": "#e5e5e5",
+      //   "button-bg-twitter": "#f5f5f5",
+      //   "button-bg-twitter-hover": "#e5e5e5",
+      //   "button-bg-google": "#f5f5f5",
+      //   "button-bg-google-hover": "#e5e5e5",
+      //   "button-bg-apple": "#f5f5f5",
+      //   "button-bg-apple-hover": "#e5e5e5",
+      //   "button-bg-tertiary": "#f5f5f5",
 
-        "input-bg-primary": "#f5f5f5",
-        "input-border-color": "#d1d5db",
-        "input-text-color": "#000000",
+      //   "input-bg-primary": "#f5f5f5",
+      //   "input-border-color": "#d1d5db",
+      //   "input-text-color": "#000000",
 
-        "phone-input-bg": "#f5f5f5",
-        "phone-input-code-bg": "#d1d5db",
+      //   "phone-input-bg": "#f5f5f5",
+      //   "phone-input-code-bg": "#d1d5db",
 
-        "country-dropdown-bg": "#d1d5db",
-        "country-dropdown-bg-hover": "#f5f5f5",
+      //   "country-dropdown-bg": "#d1d5db",
+      //   "country-dropdown-bg-hover": "#f5f5f5",
 
-        "toggle-bg": "#f5f5f5",
-        "button-submit-bg": "#4d4d4d",
-        "pill-bg": "#f5f5f5",
+      //   "toggle-bg": "#f5f5f5",
+      //   "button-submit-bg": "#4d4d4d",
+      //   "pill-bg": "#f5f5f5",
 
-        "border-color-primary": "rgba(0, 0, 0, 0.1)",
+      //   "border-color-primary": "rgba(0, 0, 0, 0.1)",
 
-        "divider-color": "rgba(0, 0, 0, 0.1)",
-      });
+      //   "divider-color": "rgba(0, 0, 0, 0.1)",
+      // });
 
       // Login function
       function login() {
@@ -289,7 +288,7 @@
         document
           .getElementById("check-trianame")
           .addEventListener("click", checkName);
-        authManager.addEventListener("TRIA_LOGIN", (event) => {
+        authManager.subscribe("LOGIN_SUCCESS", (event) => {
           console.log("TRIA_LOGIN event received:", event.detail);
         });
         //suggest Trianame
@@ -312,7 +311,7 @@
           .getElementById("initiate-authManager")
           .addEventListener("click", intiateAuthManager);
 
-        authManager.addEventListener("TRIA_LOGOUT", (event) => {
+        authManager.subscribe("LOGOUT_SUCCESS", (event) => {
           console.log("TRIA_LOGOUT event received:", event.detail);
         });
       });
